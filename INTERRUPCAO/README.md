@@ -1,9 +1,8 @@
-# _GPIO_
-##_-> INPUT_
+# _Exemplo INTERRUPÇÃO_
 
-General Purpose Input/Output (GPIO) são portas programáveis de entrada e saída de dados.
+Função que permite via hardware causar uma uma interrupção programa e para solucionar algum evento, e depois retornar ao ponto que foi interrompido da rotina.
 
-Neste caso de estudo uma GPIO está sendo programada como entrada e estamos utilizando um botão, com o tempo de debounce para nos mandar um mensagem no console.
+Neste caso de estudo é o uso da interrupção para resetar a contagem.
 
 Nosso exemplo será suportado nos seguites devices:
 
