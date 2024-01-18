@@ -22,7 +22,7 @@ typedef enum {
  * Sua variável que auxilia a gerenciar o motor
  * Sua variável que auxilia a gerenciar o encoder
  * Sua variável que auxilia a gerenciar o PID
- *
+ * 
  */
 typedef struct
 {
@@ -31,6 +31,7 @@ typedef struct
     pid_ctrl_block_handle_t pid_ctrl;
     int report_pulses;
     int expect_speed;
+    int pulses_per_rotation;
     set_motor_direction_t direction;
 } motor_control_context_t;
 
@@ -49,15 +50,30 @@ void motor_pid_update(motor_control_context_t *motor_ctrl_ctx, float kp, float k
 /**
  * @brief Seta a velocidade esperada do motor
  * 
- * @param motor_ctrl_ctx 
- * @param new_speed 
+ * @param motor_ctrl_ctx Contexto de controle de motor
+ * @param new_speed Em RPM
  */
 void set_motor_speed(motor_control_context_t *motor_ctrl_ctx, int new_speed);
 
 /**
+ * @brief Seta a velocidade esperada do motor
+ * 
+ * @param motor_ctrl_ctx Contexto de controle de motor
+ * @param new_speed Em RPM
+ */
+
+/**
+ * @brief Obtem a velocidade do motor em rpm
+ * 
+ * @param motor_ctrl_ctx Contexto de controle de motor
+ * @return float 
+ */
+float get_motor_speed(motor_control_context_t *motor_ctrl_ctx);
+
+/**
  * @brief Seta a direção do motor
  * 
- * @param motor_ctrl_ctx 
+ * @param motor_ctrl_ctx Contexto de controle de motor
  * @param direction 
  */
 void set_motor_direction(motor_control_context_t *motor_ctrl_ctx, set_motor_direction_t direction);
@@ -65,7 +81,7 @@ void set_motor_direction(motor_control_context_t *motor_ctrl_ctx, set_motor_dire
 /**
  * @brief Freia o motor e seta a velocidade em zero
  * 
- * @param motor_ctrl_ctx 
+ * @param motor_ctrl_ctx Contexto de controle de motor
  */
 void motor_brake(motor_control_context_t *motor_ctrl_ctx);
 

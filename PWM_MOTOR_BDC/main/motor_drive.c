@@ -29,8 +29,6 @@ static void pid_loop_cb(void *args)
     int cur_pulse_count = 0;
     ESP_ERROR_CHECK(pcnt_unit_get_count(pcnt_unit, &cur_pulse_count));
 
-    ESP_LOGI(TAG, "cur_pulse_count: %d", cur_pulse_count);
-
     int real_pulses = 0;
     real_pulses = cur_pulse_count - last_pulse_count;
     last_pulse_count = cur_pulse_count;
@@ -71,7 +69,12 @@ void motor_pid_update(motor_control_context_t *motor_ctrl_ctx, float kp, float k
 
 void set_motor_speed(motor_control_context_t *motor_ctrl_ctx, int new_speed)
 {
-    motor_ctrl_ctx->expect_speed = new_speed;
+    motor_ctrl_ctx->expect_speed = (int)(new_speed*(motor_ctrl_ctx->pulses_per_rotation)/6000);
+}
+
+float get_motor_speed(motor_control_context_t *motor_ctrl_ctx)
+{
+   return (motor_ctrl_ctx->report_pulses)*6000/(motor_ctrl_ctx->pulses_per_rotation);
 }
 
 void set_motor_direction(motor_control_context_t *motor_ctrl_ctx, set_motor_direction_t direction)
