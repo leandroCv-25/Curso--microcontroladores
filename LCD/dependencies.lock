@@ -1,11 +1,11 @@
 dependencies:
   LiquidCrystal:
-    component_hash: ec4ffe198e3639d52488998648d93f1d01bba43b4f7037dab9dbca0a6aaf8300
+    component_hash: 304d4e5df039c10985efae14c85460878ace9e472f65643a8838af924645764a
     source:
       git: git@github.com:leandroCv-25/LiquidCrystal.git
       path: .
       type: git
-    version: 0d95573fe75d50fd6806a3f1349efc55e0c401b9
+    version: fc2041645b9abb53fcb363ab60463b493b8b3b63
   idf:
     component_hash: null
     source:
