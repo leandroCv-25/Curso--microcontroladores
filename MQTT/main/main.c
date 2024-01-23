@@ -9,6 +9,7 @@
 #include "driver/gpio.h"
 
 #include "iot_button.h"
+#include "mqtt_client.h"
 
 #include "button_app.h"
 #include "wifi_app.h"
@@ -16,17 +17,34 @@
 
 static const char TAG[] = "MAIN MQTT";
 
+esp_mqtt_client_handle_t client;
+
+int light_state = 0;
+
 static void wifi_conection(void *arg, void *usr_data)
 {
 	// enviando na fila a ordem de iniciar o smart config
 	wifi_app_send_message(WIFI_APP_MSG_USER_REQUESTED_CONNECTION);
 }
 
-static void light_toggle(void *arg, void *usr_data)
+static void mqtt_recevied_msg(int msg)
+{
+	light_state = msg;
+}
+
+static void msg_switch(void *arg, void *usr_data)
 {
 
 	int *light_state = (int *)usr_data;
-	*light_state = !*light_state;
+	int msg = !*light_state;
+
+	mqtt_app_send_msg(client, msg);
+}
+
+void wifi_application_connected_events(void)
+{
+	ESP_LOGI(TAG, "WiFi Application Connected!!");
+	client = mqtt_app_start(&mqtt_recevied_msg);
 }
 
 void app_main(void)
@@ -50,24 +68,20 @@ void app_main(void)
 	esp_rom_gpio_pad_select_gpio(light);
 	// Configura o GPIO como saída OUTPUT
 	gpio_set_direction(light, GPIO_MODE_OUTPUT);
-	int light_state = 0;
+	light_state = 0;
 
 	ESP_LOGI(TAG, "Iniciando WI-FI APP");
-	wifi_app_start();
+	wifi_app_start(&wifi_application_connected_events);
 
 	ESP_LOGI(TAG, "Iniciando o botão");
 	button_handle_t gpio_btn = button_app_init(4, 1);
 
-	resgister_event_callback(gpio_btn, BUTTON_SINGLE_CLICK, 2000, light_toggle, &light_state);
+	resgister_event_callback(gpio_btn, BUTTON_SINGLE_CLICK, 2000, msg_switch, &light_state);
 	resgister_event_callback(gpio_btn, BUTTON_LONG_PRESS_START, 8000, wifi_conection, NULL);
-
-	vTaskDelay(pdMS_TO_TICKS(10000));
-
-	mqtt5_app_start();
 
 	while (true)
 	{
 		gpio_set_level(light, light_state);
-		vTaskDelay(pdMS_TO_TICKS(500));
+		vTaskDelay(pdMS_TO_TICKS(50));
 	}
 }
