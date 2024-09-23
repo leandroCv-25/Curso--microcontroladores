@@ -6,6 +6,9 @@
 #define MAX_CONNECTION_RETRIES		5	
 
 
+// Callback typedef
+typedef void (*wifi_connected_event_callback_t)(void);
+
 /**
  * @brief Mensagens que irão aparecer nos eventos para podermos resolver as situações
  * 
@@ -41,6 +44,6 @@ BaseType_t wifi_app_send_message(wifi_app_message_e msgID);
  * @brief Configura e inicia a tarefa que cuida do WI-Fi
  * 
  */
-void wifi_app_start(void);
+void wifi_app_start(wifi_connected_event_callback_t cb);
 
 #endif

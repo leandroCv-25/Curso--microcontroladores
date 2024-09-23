@@ -72,7 +72,7 @@ void app_main(void)
     gptimer_event_callbacks_t cbs = {
         .on_alarm = timer_on_alarm,
     };
-    // Gegistra o alarme no timer
+    // Registra o alarme no timer
     ESP_ERROR_CHECK(gptimer_register_event_callbacks(gptimer, &cbs, NULL));
 
     ESP_LOGI(TAG, "Habilita o timer");

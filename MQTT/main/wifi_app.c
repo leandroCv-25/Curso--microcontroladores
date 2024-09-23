@@ -20,6 +20,9 @@ static int g_retry_number;
 // Fila utilizada para gerenciar as mensagens
 static QueueHandle_t wifi_app_queue_handle;
 
+// WiFi application callback
+static wifi_connected_event_callback_t wifi_connected_event_cb;
+
 /**
  * Função que é usada para gerenciar eventos
  * @param arg Informção passada pra Função quando ocorre o evento
@@ -150,6 +153,11 @@ static void wifi_app_event_handler(void *arg, esp_event_base_t event_base, int32
     }
 }
 
+void wifi_app_call_callback(void)
+{
+    wifi_connected_event_cb();
+}
+
 /**
  * @brief Função que configura a manipulação dos eventos pela função wifi_app_event_handler
  *
@@ -242,6 +250,12 @@ static void wifi_app_task(void *pvParameters)
                 // Iniciamos o conectado
             case WIFI_APP_MSG_STA_CONNECTED_GOT_IP:
                 ESP_LOGI(TAG, "WIFI_APP_MSG_STA_CONNECTED_GOT_IP");
+                // Check for connection callback
+                if (wifi_connected_event_cb)
+                {
+                    wifi_app_call_callback();
+                }
+
                 break;
 
                 // Dessconectado o MCU vai reiniciar
@@ -266,8 +280,10 @@ static void wifi_app_task(void *pvParameters)
  * @brief Configura e inicia a tarefa que cuida do WI-Fi
  *
  */
-void wifi_app_start(void)
+void wifi_app_start(wifi_connected_event_callback_t cb)
 {
+
+    wifi_connected_event_cb = cb;
     ESP_LOGI(TAG, "Iniciando a aplicação");
 
     // Desabilitando mensagens da biblioteca do wifi
@@ -277,5 +293,5 @@ void wifi_app_start(void)
     wifi_app_queue_handle = xQueueCreate(3, sizeof(wifi_app_queue_message_t));
 
     // Iniciando a task no core 1 com 4096 de memoria e prioridade 3
-    xTaskCreatePinnedToCore(&wifi_app_task, "wifi_app_task", 4096, NULL, 3, NULL, 1);
+    xTaskCreate(&wifi_app_task, "wifi_app_task", 4096, NULL, 3, NULL);
 }
